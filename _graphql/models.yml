@@ -1,0 +1,12 @@
+Oposs\StructuredData\DataObjects\YamlData:
+  fields:
+    '*': true
+    asJsonString:
+      type: JSONBlob
+      property: asJsonString
+  operations:
+    read:
+      plugins:
+        filter:
+          fields:
+            key: true

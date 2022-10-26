@@ -1,0 +1,39 @@
+{
+    "name": "oposs/silverstripe-structured-data",
+    "type": "silverstripe-vendormodule",
+    "description": "Create, manage and validate structured yaml data",
+    "homepage": "https://oetiker.ch",
+    "license": "mit",
+    "keywords": [
+        "silverstripe4",
+        "yaml",
+        "json",
+        "graphql"
+    ],
+    "support": {
+        "issues": "https://github.com/oposs/silverstripe-structured-data/issues"
+    },
+    "authors": [
+        {
+            "name": "Tobias Bossert",
+            "email": "bossert@oetiker.ch"
+        }
+    ],
+    "require": {
+        "php": "^7.4 || ^8.0",
+        "silverstripe/cms": "^4",
+        "silverstripe/framework": "^4",
+        "justinrainbow/json-schema": "^5.2.12"
+    },
+    "autoload": {
+        "psr-4": {
+            "Oposs\\StructuredData\\Extensions\\": "src/Extensions",
+            "Oposs\\StructuredData\\DataObjects\\": "src/DataObjects",
+            "Oposs\\StructuredData\\Form\\": "src/Form"
+        }
+    },
+    "expose": [
+        "icons/"
+    ],
+    "version": "0.0.1"
+}

@@ -1,0 +1,8 @@
+en:
+  Oposs\StructuredData\DataObjects\StructuredDataAdmin:
+    STRUCTURED_DATA_ADMIN: 'Structured Data Admin'
+  Oposs\StructuredData\DataObjects\YamlSchema:
+    YAML_PARSER_ERROR: 'Yaml parser error: {yaml_error}'
+  Oposs\StructuredData\Form\YamlField:
+    YAML_NO_SCHEMA: 'Yaml schema `{schema_name}` not found'
+    FIELD_TOOLTIP: 'Yaml data in this field is validated against {schema_name}'
