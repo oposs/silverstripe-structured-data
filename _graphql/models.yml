@@ -1,7 +1,7 @@
-Oposs\StructuredData\DataObjects\YamlData:
+Oposs\StructuredData\DataObjects\StructuredData:
   fields:
     '*': true
-    asJsonString:
+    asJsonBlob:
       type: JSONBlob
       property: asJsonString
   operations:

@@ -2,14 +2,11 @@
 
 namespace Oposs\StructuredData\Form;
 
-use Oposs\StructuredData\DataObjects\YamlSchema;
+use Oposs\StructuredData\DataObjects\SchemaObject;
 use SilverStripe\Forms\FormField;
 use SilverStripe\Forms\TextareaField;
-use SilverStripe\Forms\TextField;
-use Symfony\Component\Yaml\Exception\ParseException;
-use Symfony\Component\Yaml\Yaml;
 
-class YamlField extends TextareaField
+class StructuredDataField extends TextareaField
 {
 
     protected $schemaDataType = FormField::SCHEMA_DATA_TYPE_CUSTOM;
@@ -25,24 +22,25 @@ class YamlField extends TextareaField
     {
         $this->validation_schema = $validation_schema;
         $this->setName($name)->setValue('');
+        $this->addExtraClass('ssd_textarea');
         parent::__construct($name, null, '');
     }
 
     public function validate($validator): bool
     {
         /**
-         * @var YamlSchema $schema
+         * @var SchemaObject $schema
          */
-        $schema = YamlSchema::get()->filter(['key' => $this->validation_schema])->first();
+        $schema = SchemaObject::get()->filter(['key' => $this->validation_schema])->first();
         if (empty($schema)) {
             $validator->validationError(
                 $this->name,
-                _t(__CLASS__ . '.YAML_NO_SCHEMA', 'Yaml schema `{schema_name}` not found', ['schema_name' => $this->validation_schema]),
+                _t(__CLASS__ . '.NO_SCHEMA', '_Schema `{schema_name}` not found', ['schema_name' => $this->validation_schema]),
                 "validation");
             return false;
         }
         $error = "";
-        if (!$schema->validateData($this->value, $error)) {
+        if (!$schema->validateObject($this->value, $error)) {
             $validator->validationError(
                 $this->name,
                 $error,
@@ -62,8 +60,9 @@ class YamlField extends TextareaField
 
     /**
      * @param string $validation_schema
+     * @return StructuredDataField
      */
-    public function setValidationSchema(string $validation_schema): YamlField
+    public function setValidationSchema(string $validation_schema): StructuredDataField
     {
         $this->validation_schema = $validation_schema;
         return $this;
@@ -77,7 +76,7 @@ class YamlField extends TextareaField
             'validation_schema' => $this->getValidationSchema(),
             'tooltip' => _t(
                 __CLASS__ . '.FIELD_TOOLTIP',
-                'Yaml data in this field is validated against {schema_name}', ['schema_name' => $this->getValidationSchema()])
+                '_Data in this field is validated against {schema_name}', ['schema_name' => $this->getValidationSchema()])
         ];
         return $state;
     }
