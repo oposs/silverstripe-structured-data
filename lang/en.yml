@@ -4,10 +4,11 @@ en:
     ADMIN_PERMISSION_NAME: 'Edit Schema Objects'
     PERMISSION_GROUP_NAME: 'Structured Data'
   Oposs\StructuredData\DataObjects\SchemaObject:
-    YAML_PARSER_ERROR: 'Parser error: {yaml_error}'
+    COULD_NOT_PARSE_SCHEMA: 'Could not parse schema `{schema_name}`, error: {parser_error}'
     DATA_DOES_NOT_COMPLY_SCHEMA: 'Data does not comply with schema: `{schema_name}` error: {validator_error}'
     SCHEMA_TITLE: 'Schema Definition'
     SCHEMA_DESCRIPTION: 'Either YAML or JSON Schema'
+    GENERAL_ERROR: 'An exception was thrown: {exception_message}'
   Oposs\StructuredData\DataObjects\StructuredData:
     YAML_PARSER_ERROR: 'Yaml parser error: {yaml_error}'
     SCHEMA_TITLE: 'Schema Object'

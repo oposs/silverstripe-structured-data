@@ -32,7 +32,7 @@ class StructuredData extends DataObject
     private static string $singular_name = 'Structured Data';
 
     private static array $db = [
-        'key' => 'Text',
+        'key' => 'Varchar(20)',
         'description' => 'Text',
         'structured_data' => 'Text'
     ];
@@ -47,7 +47,7 @@ class StructuredData extends DataObject
 
     // We use indexes to enforce uniqueness on the
     private static array $indexes = [
-        'yaml_data_keys_idx' => [
+        'data_keys_idx' => [
             'type' => 'unique',
             'columns' => ['key'],
         ]

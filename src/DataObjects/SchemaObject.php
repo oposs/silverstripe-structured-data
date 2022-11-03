@@ -2,16 +2,16 @@
 
 namespace Oposs\StructuredData\DataObjects;
 
+use Exception;
 use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\RequiredFields;
 use SilverStripe\Forms\TextareaField;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\ValidationResult;
 use SilverStripe\Security\Permission;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml;
-use Opis\JsonSchema\{
-    Validator
-};
+use Opis\JsonSchema\{Errors\ValidationError, Validator};
 
 
 /**
@@ -25,7 +25,7 @@ class SchemaObject extends DataObject
     private static string $singular_name = 'Schema';
 
     private static array $db = [
-        'schema_name' => 'Varchar(10)',
+        'schema_name' => 'Varchar(20)',
         'schema_data' => 'Text'
     ];
 
@@ -38,19 +38,22 @@ class SchemaObject extends DataObject
         'ID', 'schema_name'
     ];
 
+    public function getCMSValidator(): RequiredFields
+    {
+        return RequiredFields::create(
+            'schema_name', 'schema_name'
+        );
+    }
+
 
     public function validate(): ValidationResult
     {
         $result = new ValidationResult();
-        try {
-            Yaml::parse($this->schema_data);
-        } catch (ParseException $e) {
-            $result->addError(_t(
-                    __CLASS__ . '.YAML_PARSER_ERROR',
-                    'Yaml parser error: {yaml_error}',
-                    ['yaml_error' => $e->getMessage()])
-            );
-            return $result;
+        $error = "";
+        // We do this trick to "validate" the schema itself (note: This is a very basic validation!)
+        $dummy_data = Yaml::parse("age: 10", Yaml::PARSE_OBJECT_FOR_MAP);
+        if (!self::validateAgainstSchema($dummy_data, $this->schema_data, $error, $this->schema_name, true)) {
+            $result->addError($error);
         }
         return $result;
     }
@@ -76,24 +79,54 @@ class SchemaObject extends DataObject
      *  - When using json_decode() to parse a JSON string, make sure that associative is set to false
      *  - When using YAML::parse() set Yaml::PARSE_OBJECT_FOR_MAP
      *
-     * @param object $object Object to validate against this JSON schema.
+     * @param $object Object to validate against this JSON schema.
      * @param string $error Reference to possible error message
      * @return bool True on success, False on failure
      */
-    public function validateObject(object $object, string &$error): bool
+    public function validateObject($object, string &$error): bool
     {
-        $validator = new Validator();
-        $validation_result = $validator->validate($object, $this->schema_data);
-        if ($validation_result->isValid()) {
-            return true;
-        } else {
+        return self::validateAgainstSchema($object, $this->schema_data, $error, $this->schema_name);
+    }
+
+    /**
+     * @param $object Object to validate
+     * @param string $schema String representation of a JSON/YAML formatted schema
+     * @param string $error Reference to error string
+     * @param string $schema_name (Optional) Schema name
+     * @param bool $ignore_invalid_data If set to true (default: false) we ignore data validation errors
+     * @return bool True if success, False if either an error happened or the $object does not match $schema
+     */
+    private static function validateAgainstSchema($object, string $schema, string &$error, string $schema_name = '', bool $ignore_invalid_data = false): bool
+    {
+        try {
+            $parsed_schema = Yaml::parse($schema, YAML::PARSE_OBJECT_FOR_MAP);
+            $validator = new Validator();
+            $validation_result = $validator->validate($object, $parsed_schema);
+            if ($ignore_invalid_data || $validation_result->isValid()) {
+                return true;
+            } else {
+                $error = _t(
+                    __CLASS__ . '.DATA_DOES_NOT_COMPLY_SCHEMA',
+                    '_Data does not comply with schema: {schema_name}, error: {validator_error}',
+                    ["validator_error" => $validation_result->error(), "schema_name" => $schema_name]
+                );
+            }
+        } catch (ParseException $parseException) {
             $error = _t(
-                __CLASS__ . '.DATA_DOES_NOT_COMPLY_SCHEMA',
-                '_Data does not comply with schema: {schema_name}, error: {validator_error}',
-                ["validator_error" => $validation_result->error(), "schema_name" => $this->schema_name]
+                __CLASS__ . '.COULD_NOT_PARSE_SCHEMA',
+                '_Could not parse schema `{schema_name}`, error: {parser_error}',
+                ["schema_name" => $schema_name, "parser_error" => $parseException->getMessage()]
+            );
+            return false;
+        } catch (Exception $e) {
+            $error = _t(
+                __CLASS__ . '.GENERAL_ERROR',
+                '_An exception was thrown: {exception_message}',
+                ["exception_message" => $e->getMessage()]
             );
             return false;
         }
+        return false;
     }
 
     public function canView($member = null)
