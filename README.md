@@ -6,7 +6,7 @@ Create, manage and validate structured yaml/json formatted text data and make it
 
 Install through composer: `composer require oposs/silverstripe-structured-data`.
 
-To enable the graphQL type add the following to your `app/_config/graphql.yml`:
+To enable the graphQL type, add the following lines to your `app/_config/graphql.yml`:
 
 ```yaml
 SilverStripe\GraphQL\Schema\Schema:
@@ -28,8 +28,8 @@ Fine-grained control over editing access is possible by defining allowed groups 
 
 ## Usage
 
-Besides the possibility to access the data via graphQL this model also provides a specialized `StructuredDataField` which can be
-setup to validate against a schema:
+Besides the possibility to access the data via graphQL this module also provides a specialized `StructuredDataField` which can be
+setup to validate it's input against a schema:
 
 ```php
 use Oposs\StructuredData\Form\StructuredDataField;
