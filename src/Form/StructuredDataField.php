@@ -6,11 +6,15 @@ use Oposs\StructuredData\DataObjects\SchemaObject;
 use SilverStripe\Forms\FormField;
 use SilverStripe\Forms\TextareaField;
 
+/**
+ * Creates a textarea field for providing structured data in form of YAML/JSON formatted text. Input is
+ * then validated against a defined schema
+ */
 class StructuredDataField extends TextareaField
 {
 
     protected $schemaDataType = FormField::SCHEMA_DATA_TYPE_CUSTOM;
-    protected $schemaComponent = 'YamlField';
+    protected $schemaComponent = 'StructuredDataField';
 
     /**
      * @var string|null
@@ -31,7 +35,7 @@ class StructuredDataField extends TextareaField
         /**
          * @var SchemaObject $schema
          */
-        $schema = SchemaObject::get()->filter(['key' => $this->validation_schema])->first();
+        $schema = SchemaObject::get()->filter(['schema_name' => $this->validation_schema])->first();
         if (empty($schema)) {
             $validator->validationError(
                 $this->name,
@@ -51,18 +55,24 @@ class StructuredDataField extends TextareaField
     }
 
     /**
+     * Returns the string name of the validation schema
+     *
      * @return string|null
      */
-    public function getValidationSchema(): ?string
+    public function getValidationSchemaName(): ?string
     {
         return $this->validation_schema;
     }
 
     /**
-     * @param string $validation_schema
-     * @return StructuredDataField
+     * Sets sets the validation schema to schema_name.
+     *
+     * Note: The Schema itself has be created first in the Structured Data Admin
+     *
+     * @param string $validation_schema A valid schema name
+     * @return StructuredDataField This instance
      */
-    public function setValidationSchema(string $validation_schema): StructuredDataField
+    public function setValidationSchemaName(string $validation_schema): StructuredDataField
     {
         $this->validation_schema = $validation_schema;
         return $this;
@@ -73,10 +83,10 @@ class StructuredDataField extends TextareaField
     {
         $state = parent::getSchemaStateDefaults();
         $state['data'] += [
-            'validation_schema' => $this->getValidationSchema(),
+            'validation_schema' => $this->getValidationSchemaName(),
             'tooltip' => _t(
                 __CLASS__ . '.FIELD_TOOLTIP',
-                '_Data in this field is validated against {schema_name}', ['schema_name' => $this->getValidationSchema()])
+                '_Data in this field is validated against {schema_name}', ['schema_name' => $this->getValidationSchemaName()])
         ];
         return $state;
     }
