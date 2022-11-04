@@ -2,6 +2,7 @@
 
 namespace Oposs\StructuredData\DataObjects;
 
+use Oposs\StructuredData\Form\StructuredDataField;
 use SilverStripe\Dev\Debug;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\FieldList;
@@ -94,7 +95,8 @@ class StructuredData extends DataObject
                 ->setDescription(_t(__CLASS__ . '.DATA_DESCRIPTION', '_YAML/JSON formatted string, is validated against the selected Schema'))
                 ->setRows(20)
                 ->addExtraClass('ssd_textarea'),
-            TextareaField::create('description')
+            StructuredDataField::create('description')
+                ->setValidationSchemaName('example')
                 ->setTitle(_t(__CLASS__ . '.DESCRIPTION_TITLE', '_Description')),
             DropdownField::create('SchemaID')
                 ->setTitle(_t(__CLASS__ . '.SCHEMA_TITLE', '_Schema Object'))
@@ -142,9 +144,10 @@ class StructuredData extends DataObject
             );
     }
 
-    public function canView($member = null)
+    public function canView($member = null): bool
     {
-        return Permission::check('STRUCTURED_DATA_VIEW');
+        // Otherwise data is not accessible to an unauthenticated graphQL request
+        return true;
     }
 
     public function canDelete($member = null)

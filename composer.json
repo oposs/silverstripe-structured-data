@@ -23,6 +23,7 @@
         "php": "^7.4 || ^8.0",
         "silverstripe/cms": "^4",
         "silverstripe/framework": "^4",
+        "silverstripe/graphql": "^4.0.0",
         "opis/json-schema": "^2.2"
     },
     "autoload": {

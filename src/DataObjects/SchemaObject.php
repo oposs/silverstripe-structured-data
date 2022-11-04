@@ -79,7 +79,7 @@ class SchemaObject extends DataObject
      *  - When using json_decode() to parse a JSON string, make sure that associative is set to false
      *  - When using YAML::parse() set Yaml::PARSE_OBJECT_FOR_MAP
      *
-     * @param $object Object to validate against this JSON schema.
+     * @param object|string $object to validate against this JSON schema.
      * @param string $error Reference to possible error message
      * @return bool True on success, False on failure
      */
@@ -89,7 +89,7 @@ class SchemaObject extends DataObject
     }
 
     /**
-     * @param $object Object to validate
+     * @param object|string $object Data to validate
      * @param string $schema String representation of a JSON/YAML formatted schema
      * @param string $error Reference to error string
      * @param string $schema_name (Optional) Schema name
@@ -98,6 +98,18 @@ class SchemaObject extends DataObject
      */
     private static function validateAgainstSchema($object, string $schema, string &$error, string $schema_name = '', bool $ignore_invalid_data = false): bool
     {
+        if (is_string($object)) {
+            try {
+                $object = YAML::parse($object, YAML::PARSE_OBJECT_FOR_MAP);
+            } catch (ParseException $parseException) {
+                $error = _t(
+                    __CLASS__ . '.COULD_NOT_PARSE_DATA',
+                    '_Could not parse data: {yaml_error}',
+                    ["yaml_error" => $parseException->getMessage()]
+                );
+                return false;
+            }
+        }
         try {
             $parsed_schema = Yaml::parse($schema, YAML::PARSE_OBJECT_FOR_MAP);
             $validator = new Validator();
@@ -110,6 +122,7 @@ class SchemaObject extends DataObject
                     '_Data does not comply with schema: {schema_name}, error: {validator_error}',
                     ["validator_error" => $validation_result->error(), "schema_name" => $schema_name]
                 );
+                return false;
             }
         } catch (ParseException $parseException) {
             $error = _t(
@@ -126,7 +139,6 @@ class SchemaObject extends DataObject
             );
             return false;
         }
-        return false;
     }
 
     public function canView($member = null)

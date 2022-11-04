@@ -5,6 +5,7 @@ en:
     PERMISSION_GROUP_NAME: 'Structured Data'
   Oposs\StructuredData\DataObjects\SchemaObject:
     COULD_NOT_PARSE_SCHEMA: 'Could not parse schema `{schema_name}`, error: {parser_error}'
+    COULD_NOT_PARSE_DATA: 'Could not parse data: {yaml_error}'
     DATA_DOES_NOT_COMPLY_SCHEMA: 'Data does not comply with schema: `{schema_name}` error: {validator_error}'
     SCHEMA_TITLE: 'Schema Definition'
     SCHEMA_DESCRIPTION: 'Either YAML or JSON Schema'
