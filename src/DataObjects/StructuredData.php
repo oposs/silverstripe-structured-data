@@ -95,8 +95,7 @@ class StructuredData extends DataObject
                 ->setDescription(_t(__CLASS__ . '.DATA_DESCRIPTION', '_YAML/JSON formatted string, is validated against the selected Schema'))
                 ->setRows(20)
                 ->addExtraClass('ssd_textarea'),
-            StructuredDataField::create('description')
-                ->setValidationSchemaName('example')
+            TextareaField::create('description')
                 ->setTitle(_t(__CLASS__ . '.DESCRIPTION_TITLE', '_Description')),
             DropdownField::create('SchemaID')
                 ->setTitle(_t(__CLASS__ . '.SCHEMA_TITLE', '_Schema Object'))
