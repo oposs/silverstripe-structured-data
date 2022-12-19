@@ -89,6 +89,18 @@ class SchemaObject extends DataObject
     }
 
     /**
+     * @param object|string $object to validate against this JSON schema.
+     * @param string $schema String representation of a JSON/YAML formatted schema
+     * @param string $error Reference to error string
+     * @param string $schema_name (Optional) Schema name -> used in error messages
+     * @return bool True if success, False if either an error happened or the $object does not match $schema
+     */
+    public static function validateAgainstSchemaString($object, string $schema, string &$error, string $schema_name = ''): bool
+    {
+        return self::validateAgainstSchema($object, $schema, $error, $schema_name);
+    }
+
+    /**
      * @param object|string $object Data to validate
      * @param string $schema String representation of a JSON/YAML formatted schema
      * @param string $error Reference to error string

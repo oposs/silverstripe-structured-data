@@ -16,6 +16,14 @@ SilverStripe\GraphQL\Schema\Schema:
         - 'oposs/silverstripe-structured-data: _graphql'
 ```
 
+If you just need a form field which can be validated against a JSON schema, you may want to disable the admin backend:
+
+```yaml
+
+Oposs\StructuredData\Extensions\StructuredDataAdmin:
+  show_admin_interface: false
+```
+
 ## Permissions
 
 Global permissions provided by this module:
@@ -32,12 +40,26 @@ Besides the possibility to access the data via graphQL this module also provides
 setup to validate it's input against a schema:
 
 ```php
+<?php
 use Oposs\StructuredData\Form\StructuredDataField;
+use Oposs\StructuredData\DataObjects\SchemaObject;
+use SilverStripe\Control\Controller;
 
-StructuredDataField::create('yaml field')
-    ->setValidationSchemaName('example')
-    ->setTitle('Yaml Field)
+$SCHEMA_DUMMY = '{}';
 
+TextAreaField::create('schema_field')
+    ->setTitle('Schema for yaml_field');
+    ->setReadonly(!Permission::check('SOME_SUPER_ADMIN_CAPABILITY'))
+
+StructuredDataField::create('yaml_field')
+    // Using a schema object
+    ->setValidationSchemaName(SchemaObject::get('name')->first())
+    // Using a string
+    ->setValidationSchemaName($SCHEMA_DUMMY)
+    // And the special case when the schema is configurable in the same form
+    ->setValidationSchemaName(Controller::curr()->getRequest()->postVar('schema_field') ?? '{}')
+    ->setTitle('Yaml Field');
+   
 ```
 
 ## GraphQL example

@@ -11,12 +11,25 @@ use SilverStripe\Security\PermissionProvider;
 class StructuredDataAdmin extends ModelAdmin implements PermissionProvider
 {
     private static array $managed_models = [
-        StructuredData::class => ['title' => 'Structured Data'],
-        SchemaObject::class => ['title' => 'Schema Definitions']
+        'structured_data' => [
+            'dataClass' => StructuredData::class,
+            'title' => 'Structured Data'
+        ],
+        'schema_definitions' => [
+            'dataClass' => SchemaObject::class,
+            'title' => 'Schema Definitions'
+        ]
     ];
 
     private static string $url_segment = 'structured_data_admin';
     private static string $menu_title = 'Structured Data';
+
+    private static string $menu_icon_class = 'font-icon-code';
+
+    /**
+     * Should we show the admin interface in the cms backend
+     */
+    private static bool $show_admin_interface = true;
 
     public function providePermissions(): array
     {
@@ -35,6 +48,6 @@ class StructuredDataAdmin extends ModelAdmin implements PermissionProvider
 
     public function canView($member = null): bool
     {
-        return Permission::check('STRUCTURED_DATA_VIEW');
+        return self::config()->get('show_admin_interface') && Permission::check('STRUCTURED_DATA_VIEW');
     }
 }
