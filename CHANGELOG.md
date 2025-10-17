@@ -1,3 +1,9 @@
+## [0.1.3] - 2025-10-17
+
+### Changed
+
+* Upgrade dependencies for SilverStripe 5 compatability
+
 ## [0.1.2] - 2023-03-08
 
 ### Added
